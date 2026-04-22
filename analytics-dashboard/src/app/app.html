@@ -1,0 +1,14 @@
+<mat-toolbar color="primary">
+  <span class="title">Analytics Dashboard</span>
+  <span class="spacer"></span>
+  @for (link of navLinks; track link.path) {
+    <a mat-button [routerLink]="link.path" routerLinkActive="active-link">
+      <mat-icon>{{ link.icon }}</mat-icon>
+      {{ link.label }}
+    </a>
+  }
+</mat-toolbar>
+
+<main class="content">
+  <router-outlet />
+</main>

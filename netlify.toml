@@ -1,0 +1,27 @@
+[build]
+  base    = "analytics-dashboard"
+  command = "npm run build -- --configuration production"
+  publish = "dist/analytics-dashboard/browser"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[functions]
+  directory    = "netlify/functions"
+  node_bundler = "esbuild"
+
+[dev]
+  framework  = "#custom"
+  command    = "npm run start"
+  targetPort = 4200
+  port       = 8888
+
+[[redirects]]
+  from   = "/api/*"
+  to     = "/.netlify/functions/:splat"
+  status = 200
+
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

@@ -1,0 +1,51 @@
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.app-filter {
+  width: 220px;
+}
+
+.page-title {
+  margin: 0;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.count-badge {
+  font-size: 0.85rem;
+  font-weight: 400;
+  background: #e8eaf6;
+  color: #3f51b5;
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+
+.table-container {
+  overflow-x: auto;
+  max-height: 70vh;
+  border-radius: 4px;
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-header-cell {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.empty-state {
+  color: #999;
+  font-style: italic;
+  text-align: center;
+  padding: 48px 0;
+}

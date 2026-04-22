@@ -1,0 +1,38 @@
+<div class="toolbar-row">
+  <h2 class="page-title">Page Visits Today <span class="count-badge">{{ total() }}</span></h2>
+  <mat-form-field appearance="outline" class="app-filter">
+    <mat-label>Filter by App</mat-label>
+    <mat-select [(ngModel)]="selectedApp" [ngModelOptions]="{standalone: true}">
+      <mat-option value="">All Apps</mat-option>
+      @for (app of appList(); track app) {
+        <mat-option [value]="app">{{ app }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (filteredRows().length === 0) {
+  <p class="empty-state">No page visits recorded today.</p>
+} @else {
+  <div class="table-container mat-elevation-z2">
+    <table mat-table [dataSource]="filteredRows()" matSort>
+      <ng-container matColumnDef="appId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>App</th>
+        <td mat-cell *matCellDef="let row">{{ row.appId }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="page">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Page</th>
+        <td mat-cell *matCellDef="let row">{{ row.page }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="timestamp">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Time</th>
+        <td mat-cell *matCellDef="let row">{{ row.timestamp | date: 'short' }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+}

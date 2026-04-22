@@ -1,0 +1,65 @@
+@if (vm(); as vm) {
+  <div class="toolbar-row">
+    <mat-form-field appearance="outline" class="app-filter">
+      <mat-label>Filter by App</mat-label>
+      <mat-select [(ngModel)]="selectedApp" [ngModelOptions]="{standalone: true}">
+        <mat-option value="">All Apps</mat-option>
+        @for (app of appList(); track app) {
+          <mat-option [value]="app">{{ app }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="stats-grid">
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Total Visits Today</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="big-number">{{ vm.totalVisits }}</span>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="stat-card">
+      <mat-card-header>
+        <mat-card-title>Total Logins Today</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <span class="big-number">{{ vm.totalLogins }}</span>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="breakdown-card">
+      <mat-card-header>
+        <mat-card-title>Visits by App</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @for (item of vm.visitsByApp; track item._id) {
+          <div class="app-row">
+            <span class="app-name">{{ item._id }}</span>
+            <strong class="app-count">{{ item.count }}</strong>
+          </div>
+        } @empty {
+          <p class="empty-state">No visits recorded today.</p>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="breakdown-card">
+      <mat-card-header>
+        <mat-card-title>Logins by App</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @for (item of vm.loginsByApp; track item._id) {
+          <div class="app-row">
+            <span class="app-name">{{ item._id }}</span>
+            <strong class="app-count">{{ item.count }}</strong>
+          </div>
+        } @empty {
+          <p class="empty-state">No logins recorded today.</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+}
