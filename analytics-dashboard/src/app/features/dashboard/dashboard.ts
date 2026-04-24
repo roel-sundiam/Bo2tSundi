@@ -23,7 +23,6 @@ export class DashboardComponent implements OnDestroy {
 
   registrationCount = signal(0);
   lastRefreshed = signal<Date | null>(null);
-  netlifyInvocations = signal<number | null>(null);
 
   private readonly HIGHLIGHT_MS = 5 * 60 * 1000;
   private prevCounts = new Map<string, { visits: number; logins: number }>();
@@ -44,7 +43,6 @@ export class DashboardComponent implements OnDestroy {
 
   constructor() {
     this.analytics.getRegistrations().subscribe(r => this.registrationCount.set(r.rows.length));
-    this.analytics.getNetlifyUsage().subscribe(u => this.netlifyInvocations.set(u.invocations));
     document.addEventListener('click', this.unlockAudio, { once: true });
 
     effect(() => {
