@@ -1,18 +1,7 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "analytics-dashboard/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist/analytics-dashboard" }
-    },
-    {
-      "src": "api/[^_]*.js",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/index.html" }
+  "buildCommand": "cd analytics-dashboard && npm install && npm run build -- --configuration production",
+  "outputDirectory": "analytics-dashboard/dist/analytics-dashboard",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
