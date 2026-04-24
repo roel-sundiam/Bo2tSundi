@@ -155,7 +155,7 @@ export class DashboardComponent implements OnDestroy {
   readonly tennisMarketplaceId = 'tennismarketplace';
   readonly tennisMarketplaceName = 'Tennis Marketplace';
   readonly tenisuAppId = 'tenisuapp';
-  readonly tenisuAppName = 'Tenisu';
+  readonly tenisuAppName = 'Tenisu Tennis Club';
 
   private readonly KNOWN_APP_IDS = [
     'pvtennisclub',
