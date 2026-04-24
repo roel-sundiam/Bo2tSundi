@@ -227,6 +227,12 @@ export class AnalyticsService implements OnDestroy {
     );
   }
 
+  getNetlifyUsage(): Observable<{ invocations: number; date: string }> {
+    return this.http.get<{ invocations: number; date: string }>(`${this.base}/getNetlifyUsage`).pipe(
+      catchError(() => of({ invocations: 0, date: '' }))
+    );
+  }
+
   getSheServesFinance(): Observable<SheServesFinanceSummary> {
     const base = 'https://she-serves-tc.netlify.app/.netlify/functions/api/api';
     return combineLatest([
@@ -237,7 +243,7 @@ export class AnalyticsService implements OnDestroy {
         const collections = entries.filter(e => e.entryType === 'cash-in').reduce((sum, e) => sum + e.amount, 0);
         const disbursements = entries.filter(e => e.entryType === 'cash-out').reduce((sum, e) => sum + e.amount, 0);
         const netIncome = collections - disbursements;
-        const appServiceFee = netIncome > 0 ? netIncome * 0.02 : 0;
+        const appServiceFee = netIncome > 0 ? netIncome * 0.05 : 0;
         const totalServicePaid = payments.reduce((sum, p) => sum + p.amount, 0);
         const outstandingFee = Math.max(0, appServiceFee - totalServicePaid);
         return { collections, disbursements, netIncome, appServiceFee, totalServicePaid, outstandingFee };

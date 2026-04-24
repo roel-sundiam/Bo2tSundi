@@ -18,6 +18,7 @@ const { handler: getVisitsMarketplace }    = require('./netlify/functions/getVis
 const { handler: getLoginsMarketplace }    = require('./netlify/functions/getLoginsMarketplace');
 const { handler: getReservationsRT2 } = require('./netlify/functions/getReservationsRT2');
 const { handler: getPaymentsRT2 }     = require('./netlify/functions/getPaymentsRT2');
+const { handler: getNetlifyUsage }    = require('./netlify/functions/getNetlifyUsage');
 
 function toEvent(req) {
   return {
@@ -54,6 +55,7 @@ app.all('/api/getVisitsMarketplace',    (req, res) => handle(getVisitsMarketplac
 app.all('/api/getLoginsMarketplace',    (req, res) => handle(getLoginsMarketplace,    req, res));
 app.all('/api/getReservationsRT2', (req, res) => handle(getReservationsRT2, req, res));
 app.all('/api/getPaymentsRT2',     (req, res) => handle(getPaymentsRT2,     req, res));
+app.all('/api/getNetlifyUsage',    (req, res) => handle(getNetlifyUsage,    req, res));
 
 const PORT = 9999;
 app.listen(PORT, () => {
