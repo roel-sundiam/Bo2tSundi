@@ -63,6 +63,7 @@ export class VisitsComponent {
     if (appId.toLowerCase() === 'pvtennisclub') return this.pvTennisClubName;
     if (appId.toLowerCase() === 'sheservestc') return 'SheServes Tennis Club';
     if (appId.toLowerCase() === 'rctennisacademy') return 'RC Tennis Academy';
+    if (appId.toLowerCase() === 'tenisuapp') return 'Tenisu';
     return appId;
   }
 }

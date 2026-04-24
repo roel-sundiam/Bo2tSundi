@@ -154,6 +154,8 @@ export class DashboardComponent implements OnDestroy {
   readonly rcTennisAcademyName = 'RC Tennis Academy';
   readonly tennisMarketplaceId = 'tennismarketplace';
   readonly tennisMarketplaceName = 'Tennis Marketplace';
+  readonly tenisuAppId = 'tenisuapp';
+  readonly tenisuAppName = 'Tenisu';
 
   private readonly KNOWN_APP_IDS = [
     'pvtennisclub',
@@ -161,6 +163,7 @@ export class DashboardComponent implements OnDestroy {
     'rt2tennisclub',
     'rctennisacademy',
     'tennismarketplace',
+    'tenisuapp',
   ];
 
   private raw$ = combineLatest([this.analytics.visits$, this.analytics.logins$]).pipe(
@@ -241,6 +244,10 @@ export class DashboardComponent implements OnDestroy {
     return appId.toLowerCase() === this.tennisMarketplaceId;
   }
 
+  isTenisuApp(appId: string): boolean {
+    return appId.toLowerCase() === this.tenisuAppId;
+  }
+
   displayAppName(appId: string): string {
     if (appId === 'No data yet') {
       return appId;
@@ -250,6 +257,7 @@ export class DashboardComponent implements OnDestroy {
     if (this.isRT2TennisClub(appId)) return this.rt2TennisClubName;
     if (this.isRCTennisAcademy(appId)) return this.rcTennisAcademyName;
     if (this.isTennisMarketplace(appId)) return this.tennisMarketplaceName;
+    if (this.isTenisuApp(appId)) return this.tenisuAppName;
     return appId;
   }
 
@@ -261,6 +269,7 @@ export class DashboardComponent implements OnDestroy {
       rt2tennisclub: 'https://tennisclubrt2-v2.netlify.app/',
       rctennisacademy: 'https://rctennis-academy.netlify.app/',
       tennismarketplace: 'https://tennis-marketplace.netlify.app/',
+      tenisuapp: 'https://tenisu-app.netlify.app/player/',
     };
 
     return urls[normalized] ?? null;
