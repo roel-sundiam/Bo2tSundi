@@ -22,6 +22,16 @@ export const routes: Routes = [
       import('./features/logins/logins').then(m => m.LoginsComponent),
   },
   {
+    path: 'reports',
+    loadComponent: () =>
+      import('./features/reports/reports').then(m => m.ReportsComponent),
+  },
+  {
+    path: 'app/:appId',
+    loadComponent: () =>
+      import('./features/app-detail/app-detail').then(m => m.AppDetailComponent),
+  },
+  {
     path: '**',
     redirectTo: 'dashboard',
   },

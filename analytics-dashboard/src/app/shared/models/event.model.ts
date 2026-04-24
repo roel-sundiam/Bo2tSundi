@@ -12,6 +12,7 @@ export interface VisitRow {
   appId: string;
   page: string;
   timestamp: string;
+  userId?: string | null;
 }
 
 export interface LoginRow {
@@ -35,4 +36,39 @@ export interface LoginsResponse {
   rows: LoginRow[];
   summary: AppSummary[];
   total: number;
+}
+
+export interface RegistrationsResponse {
+  columns: string[];
+  rows: Record<string, string>[];
+}
+
+export interface ReservationRT2Row {
+  bookedBy: string;
+  date: string;
+  timeSlot: number;
+  endTimeSlot: number;
+  players: string[];
+  status: string;
+  paymentStatus: string;
+  totalFee: number;
+}
+
+export interface ReservationsRT2Response {
+  rows: ReservationRT2Row[];
+}
+
+export interface PaymentRT2Row {
+  paidBy: string;
+  amount: number;
+  currency: string;
+  paymentMethod: string;
+  description: string;
+  status: string;
+  paymentDate: string;
+  referenceNumber: string;
+}
+
+export interface PaymentsRT2Response {
+  rows: PaymentRT2Row[];
 }

@@ -1,0 +1,309 @@
+@if (data(); as d) {
+  <div class="detail-shell" [class.pv-tennis-theme]="isPvTennisClub" [class.ss-theme]="isSheServesTC" [class.rt2-theme]="isRT2TennisClub" [class.tm-theme]="isTennisMarketplace">
+
+    <div class="detail-header">
+      <a mat-icon-button routerLink="/dashboard" aria-label="Back">
+        <mat-icon>arrow_back</mat-icon>
+      </a>
+      <div>
+        <p class="eyebrow">
+          @if (isPvTennisClub || isSheServesTC || isTennisMarketplace) {
+            Club analytics
+          } @else {
+            App detail
+          }
+        </p>
+        <h1 class="app-title">{{ displayAppName(appId) }}</h1>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <mat-icon class="summary-icon visits-icon">visibility</mat-icon>
+          <span class="summary-value">{{ d.totalVisits }}</span>
+          <span class="summary-label">Total Visits Today</span>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="summary-card">
+        <mat-card-content>
+          <mat-icon class="summary-icon logins-icon">person</mat-icon>
+          <span class="summary-value">{{ d.totalLogins }}</span>
+          <span class="summary-label">Total Logins Today</span>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    @if (isRT2TennisClub || isPvTennisClub || isSheServesTC || isRCTennisAcademy || isTennisMarketplace) {
+      <section class="detail-card-sections">
+        <mat-card class="data-card">
+          @let latestVisitAt = latestEventTimestamp(d.visits);
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon class="tab-icon">visibility</mat-icon>
+              Visits ({{ d.visits.length }})
+            </mat-card-title>
+            <div class="kpi-row">
+              <span class="kpi-chip kpi-chip-info">Latest: {{ latestVisitAt ? (latestVisitAt | date:'short') : 'No data' }}</span>
+              <span class="kpi-chip kpi-chip-info">Today: {{ d.visits.length }}</span>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            @if (d.visits.length === 0) {
+              <p class="empty-state">No page visits recorded today.</p>
+            } @else {
+              <div class="table-container">
+                <table mat-table [dataSource]="d.visits">
+                  <ng-container matColumnDef="userId">
+                    <th mat-header-cell *matHeaderCellDef>User</th>
+                    <td mat-cell *matCellDef="let row">{{ row.userId ?? '—' }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="page">
+                    <th mat-header-cell *matHeaderCellDef>Page</th>
+                    <td mat-cell *matCellDef="let row">{{ row.page }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="timestamp">
+                    <th mat-header-cell *matHeaderCellDef>Time</th>
+                    <td mat-cell *matCellDef="let row">{{ row.timestamp | date:'short' }}</td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="isRT2TennisClub ? visitColumnsRT2 : visitColumns; sticky: true"></tr>
+                  <tr mat-row *matRowDef="let row; columns: isRT2TennisClub ? visitColumnsRT2 : visitColumns;"></tr>
+                </table>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="data-card">
+          @let latestLoginAt = latestEventTimestamp(d.logins);
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon class="tab-icon">person</mat-icon>
+              Logins ({{ d.logins.length }})
+            </mat-card-title>
+            <div class="kpi-row">
+              <span class="kpi-chip kpi-chip-info">Latest: {{ latestLoginAt ? (latestLoginAt | date:'short') : 'No data' }}</span>
+              <span class="kpi-chip kpi-chip-info">Today: {{ d.logins.length }}</span>
+            </div>
+          </mat-card-header>
+          <mat-card-content>
+            @if (d.logins.length === 0) {
+              <p class="empty-state">No logins recorded today.</p>
+            } @else {
+              <div class="table-container">
+                <table mat-table [dataSource]="d.logins">
+                  <ng-container matColumnDef="userId">
+                    <th mat-header-cell *matHeaderCellDef>User</th>
+                    <td mat-cell *matCellDef="let row">{{ row.userId }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="timestamp">
+                    <th mat-header-cell *matHeaderCellDef>Time</th>
+                    <td mat-cell *matCellDef="let row">{{ row.timestamp | date:'short' }}</td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="loginColumns; sticky: true"></tr>
+                  <tr mat-row *matRowDef="let row; columns: loginColumns;"></tr>
+                </table>
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+
+        @if (isRT2TennisClub) {
+          <mat-card class="data-card">
+            @let latestReservationAt = latestReservationDate();
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="tab-icon">event</mat-icon>
+                Reservations ({{ reservationsRT2().length }})
+              </mat-card-title>
+              <div class="kpi-row">
+                <span class="kpi-chip kpi-chip-warn">Pending: {{ pendingReservationsCount() }}</span>
+                <span class="kpi-chip kpi-chip-info">Latest: {{ latestReservationAt ? (latestReservationAt | date:'mediumDate') : 'No data' }}</span>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              @if (reservationsRT2().length === 0) {
+                <p class="empty-state">No reservations found.</p>
+              } @else {
+                <div class="table-container">
+                  <table mat-table [dataSource]="reservationsRT2()">
+                    <ng-container matColumnDef="bookedBy">
+                      <th mat-header-cell *matHeaderCellDef>Booked By</th>
+                      <td mat-cell *matCellDef="let row">{{ row.bookedBy }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="date">
+                      <th mat-header-cell *matHeaderCellDef>Date</th>
+                      <td mat-cell *matCellDef="let row">{{ row.date | date:'mediumDate' }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="time">
+                      <th mat-header-cell *matHeaderCellDef>Time</th>
+                      <td mat-cell *matCellDef="let row">{{ formatTimeSlot(row.timeSlot) }} - {{ formatTimeSlot(row.endTimeSlot) }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="players">
+                      <th mat-header-cell *matHeaderCellDef>Players</th>
+                      <td mat-cell *matCellDef="let row">{{ row.players.join(', ') }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="status">
+                      <th mat-header-cell *matHeaderCellDef>Status</th>
+                      <td mat-cell *matCellDef="let row">{{ row.status }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="totalFee">
+                      <th mat-header-cell *matHeaderCellDef>Fee</th>
+                      <td mat-cell *matCellDef="let row">PHP {{ row.totalFee }}</td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="reservationColumns; sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: reservationColumns;"></tr>
+                  </table>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="data-card">
+            @let latestPaymentAt = latestPaymentDate();
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="tab-icon">payments</mat-icon>
+                Payments ({{ paymentsRT2().length }})
+              </mat-card-title>
+              <div class="kpi-row">
+                <span class="kpi-chip kpi-chip-success">Paid: PHP {{ formatAmount(totalPaidAmount()) }}</span>
+                <span class="kpi-chip kpi-chip-warn">Pending: {{ pendingPaymentsCount() }}</span>
+                <span class="kpi-chip kpi-chip-info">Latest: {{ latestPaymentAt ? (latestPaymentAt | date:'mediumDate') : 'No data' }}</span>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              @if (paymentsRT2().length === 0) {
+                <p class="empty-state">No payments found.</p>
+              } @else {
+                <div class="table-container">
+                  <table mat-table [dataSource]="paymentsRT2()">
+                    <ng-container matColumnDef="paidBy">
+                      <th mat-header-cell *matHeaderCellDef>Paid By</th>
+                      <td mat-cell *matCellDef="let row">{{ row.paidBy }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="amount">
+                      <th mat-header-cell *matHeaderCellDef>Amount</th>
+                      <td mat-cell *matCellDef="let row">PHP {{ row.amount }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="paymentMethod">
+                      <th mat-header-cell *matHeaderCellDef>Method</th>
+                      <td mat-cell *matCellDef="let row">{{ row.paymentMethod }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="description">
+                      <th mat-header-cell *matHeaderCellDef>Description</th>
+                      <td mat-cell *matCellDef="let row">{{ row.description }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="status">
+                      <th mat-header-cell *matHeaderCellDef>Status</th>
+                      <td mat-cell *matCellDef="let row">{{ row.status }}</td>
+                    </ng-container>
+                    <ng-container matColumnDef="paymentDate">
+                      <th mat-header-cell *matHeaderCellDef>Date</th>
+                      <td mat-cell *matCellDef="let row">{{ row.paymentDate | date:'mediumDate' }}</td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="paymentColumns; sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: paymentColumns;"></tr>
+                  </table>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+
+        @if (isSheServesTC) {
+          <mat-card class="data-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="tab-icon">how_to_reg</mat-icon>
+                Registrations ({{ registrations().rows.length }})
+              </mat-card-title>
+              <div class="kpi-row">
+                <span class="kpi-chip kpi-chip-info">Latest 10 records</span>
+                <span class="kpi-chip kpi-chip-info">Total shown: {{ registrations().rows.length }}</span>
+              </div>
+            </mat-card-header>
+            <mat-card-content>
+              @if (registrations().rows.length === 0) {
+                <p class="empty-state">No registrations found.</p>
+              } @else {
+                <div class="table-container">
+                  <table mat-table [dataSource]="registrations().rows">
+                    @for (col of regColumns; track col) {
+                      <ng-container [matColumnDef]="col">
+                        <th mat-header-cell *matHeaderCellDef>{{ col.trim() }}</th>
+                        <td mat-cell *matCellDef="let row">{{ row[col] }}</td>
+                      </ng-container>
+                    }
+                    <tr mat-header-row *matHeaderRowDef="regColumns; sticky: true"></tr>
+                    <tr mat-row *matRowDef="let row; columns: regColumns;"></tr>
+                  </table>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        }
+      </section>
+    } @else {
+      <mat-tab-group animationDuration="200ms">
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">visibility</mat-icon>
+          Visits ({{ d.visits.length }})
+        </ng-template>
+
+        @if (d.visits.length === 0) {
+          <p class="empty-state">No page visits recorded today.</p>
+        } @else {
+          <div class="table-container mat-elevation-z1">
+            <table mat-table [dataSource]="d.visits">
+              <ng-container matColumnDef="userId">
+                <th mat-header-cell *matHeaderCellDef>User</th>
+                <td mat-cell *matCellDef="let row">{{ row.userId ?? '—' }}</td>
+              </ng-container>
+              <ng-container matColumnDef="page">
+                <th mat-header-cell *matHeaderCellDef>Page</th>
+                <td mat-cell *matCellDef="let row">{{ row.page }}</td>
+              </ng-container>
+              <ng-container matColumnDef="timestamp">
+                <th mat-header-cell *matHeaderCellDef>Time</th>
+                <td mat-cell *matCellDef="let row">{{ row.timestamp | date:'short' }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="isRT2TennisClub ? visitColumnsRT2 : visitColumns; sticky: true"></tr>
+              <tr mat-row *matRowDef="let row; columns: isRT2TennisClub ? visitColumnsRT2 : visitColumns;"></tr>
+            </table>
+          </div>
+        }
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon class="tab-icon">person</mat-icon>
+          Logins ({{ d.logins.length }})
+        </ng-template>
+
+        @if (d.logins.length === 0) {
+          <p class="empty-state">No logins recorded today.</p>
+        } @else {
+          <div class="table-container mat-elevation-z1">
+            <table mat-table [dataSource]="d.logins">
+              <ng-container matColumnDef="userId">
+                <th mat-header-cell *matHeaderCellDef>User</th>
+                <td mat-cell *matCellDef="let row">{{ row.userId }}</td>
+              </ng-container>
+              <ng-container matColumnDef="timestamp">
+                <th mat-header-cell *matHeaderCellDef>Time</th>
+                <td mat-cell *matCellDef="let row">{{ row.timestamp | date:'short' }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="loginColumns; sticky: true"></tr>
+              <tr mat-row *matRowDef="let row; columns: loginColumns;"></tr>
+            </table>
+          </div>
+        }
+      </mat-tab>
+      </mat-tab-group>
+    }
+  </div>
+}

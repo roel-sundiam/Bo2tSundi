@@ -1,7 +1,6 @@
 [build]
-  base    = "analytics-dashboard"
-  command = "npm run build -- --configuration production"
-  publish = "dist/analytics-dashboard/browser"
+  command = "cd analytics-dashboard && npm run build -- --configuration production"
+  publish = "analytics-dashboard/dist/analytics-dashboard/browser"
 
 [build.environment]
   NODE_VERSION = "20"

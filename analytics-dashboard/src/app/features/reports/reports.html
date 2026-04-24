@@ -1,0 +1,119 @@
+<section class="reports-shell">
+  <header class="reports-hero">
+    <div>
+      <p class="eyebrow">Performance reporting</p>
+      <h1 class="hero-title">Visits and logins across daily, weekly, and monthly windows</h1>
+      <p class="hero-subtitle">
+        Track engagement trends, compare app performance, and present a clear executive summary in
+        one view.
+      </p>
+    </div>
+
+    <div class="range-switch" role="tablist" aria-label="Reporting range">
+      @for (range of ranges; track range.key) {
+        <button
+          type="button"
+          class="range-button"
+          [class.active]="selectedRange() === range.key"
+          (click)="setRange(range.key)"
+        >
+          <span>{{ range.label }}</span>
+          <small>{{ range.hint }}</small>
+        </button>
+      }
+    </div>
+  </header>
+
+  <section class="kpi-grid">
+    <article class="kpi-card">
+      <p>Total visits</p>
+      <strong>{{ report().totalVisits }}</strong>
+    </article>
+    <article class="kpi-card highlight">
+      <p>Total logins</p>
+      <strong>{{ report().totalLogins }}</strong>
+    </article>
+    <article class="kpi-card">
+      <p>Combined events</p>
+      <strong>{{ report().totalEvents }}</strong>
+    </article>
+    <article class="kpi-card muted">
+      <p>Report window</p>
+      <strong>{{ report().from | date:'MMM d, y' }} - {{ report().to | date:'MMM d, y' }}</strong>
+    </article>
+  </section>
+
+  <section class="chart-grid">
+    <article class="chart-card">
+      <div class="card-head">
+        <h2>Trend timeline</h2>
+        @if (loading()) {
+          <span class="loading-pill">Refreshing...</span>
+        }
+      </div>
+      <apx-chart
+        [series]="trendChart().series"
+        [chart]="trendChart().chart"
+        [xaxis]="trendChart().xaxis"
+        [yaxis]="trendChart().yaxis"
+        [dataLabels]="trendChart().dataLabels"
+        [stroke]="trendChart().stroke"
+        [fill]="trendChart().fill"
+        [tooltip]="trendChart().tooltip"
+        [grid]="trendChart().grid"
+        [colors]="trendChart().colors"
+        [legend]="trendChart().legend"
+      />
+    </article>
+
+    <article class="chart-card">
+      <div class="card-head">
+        <h2>App breakdown</h2>
+      </div>
+      <apx-chart
+        [series]="appBreakdownChart().series"
+        [chart]="appBreakdownChart().chart"
+        [xaxis]="appBreakdownChart().xaxis"
+        [yaxis]="appBreakdownChart().yaxis"
+        [dataLabels]="appBreakdownChart().dataLabels"
+        [plotOptions]="appBreakdownChart().plotOptions"
+        [tooltip]="appBreakdownChart().tooltip"
+        [grid]="appBreakdownChart().grid"
+        [colors]="appBreakdownChart().colors"
+      />
+    </article>
+  </section>
+
+  <section class="table-card">
+    <div class="card-head">
+      <h2>Top apps by total activity</h2>
+    </div>
+
+    @if (report().appRollups.length > 0) {
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>App</th>
+              <th>Visits</th>
+              <th>Logins</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of report().appRollups; track row.appId) {
+              <tr>
+                <td>{{ row.label }}</td>
+                <td>{{ row.visits }}</td>
+                <td>{{ row.logins }}</td>
+                <td><strong>{{ row.total }}</strong></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <p class="empty-state">No events found for this range yet.</p>
+    }
+  </section>
+</section>
