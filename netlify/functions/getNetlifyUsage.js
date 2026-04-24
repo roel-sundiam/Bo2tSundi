@@ -21,49 +21,46 @@ exports.handler = async (event) => {
     };
   }
 
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    'Content-Type': 'application/json',
+  };
+
   try {
-    const now  = new Date();
-    const from = new Date(now);
-    from.setHours(0, 0, 0, 0);
+    // Step 1: get accounts to find account slug
+    const accountsRes = await fetch('https://api.netlify.com/api/v1/accounts', { headers });
+    const accounts = await accountsRes.json();
+    const accountSlug = accounts?.[0]?.slug ?? null;
 
-    const fromTs = from.getTime();
-    const toTs   = now.getTime();
+    // Step 2: get billing usage for function invocations (current billing period)
+    let invocations = 0;
+    let usageData = null;
 
-    const url = `https://api.netlify.com/api/v1/sites/${siteId}/analytics/reports/functions-usage/data` +
-      `?from=${fromTs}&to=${toTs}&resolution=hour`;
-
-    const res = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.error('Netlify API error:', res.status, text);
-      return {
-        statusCode: res.status,
-        headers: CORS_HEADERS,
-        body: JSON.stringify({ error: `Netlify API returned ${res.status}`, detail: text }),
-      };
+    if (accountSlug) {
+      const usageRes = await fetch(
+        `https://api.netlify.com/api/v1/accounts/${accountSlug}/billing/usage`,
+        { headers }
+      );
+      usageData = await usageRes.json();
+      // Functions usage is typically under 'functions_invocations' or 'functions'
+      invocations =
+        usageData?.functions_invocations?.used ??
+        usageData?.functions?.invocations?.used ??
+        usageData?.functions?.used ??
+        0;
     }
-
-    const data = await res.json();
-
-    const invocations = (data.data ?? []).reduce((sum, point) => sum + (point[1] ?? 0), 0);
 
     return {
       statusCode: 200,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ invocations, date: from.toISOString().split('T')[0] }),
+      body: JSON.stringify({ invocations, accountSlug, usageData }),
     };
   } catch (err) {
     console.error('getNetlifyUsage error:', err);
     return {
       statusCode: 500,
       headers: CORS_HEADERS,
-      body: JSON.stringify({ error: 'Internal error' }),
+      body: JSON.stringify({ error: 'Internal error', detail: err.message }),
     };
   }
 };
