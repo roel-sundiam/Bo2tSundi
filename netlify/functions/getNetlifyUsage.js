@@ -26,11 +26,25 @@ exports.handler = async (event) => {
     'Content-Type': 'application/json',
   };
 
+  async function safeJson(res) {
+    const text = await res.text();
+    try { return JSON.parse(text); } catch { return { _raw: text, _status: res.status }; }
+  }
+
   try {
     // Step 1: get accounts to find account slug
     const accountsRes = await fetch('https://api.netlify.com/api/v1/accounts', { headers });
-    const accounts = await accountsRes.json();
-    const accountSlug = accounts?.[0]?.slug ?? null;
+    if (!accountsRes.ok) {
+      const body = await accountsRes.text();
+      console.error('Netlify accounts error:', accountsRes.status, body);
+      return {
+        statusCode: 200,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ invocations: 0, error: `accounts API ${accountsRes.status}`, detail: body.slice(0, 200) }),
+      };
+    }
+    const accounts = await safeJson(accountsRes);
+    const accountSlug = Array.isArray(accounts) ? (accounts[0]?.slug ?? null) : null;
 
     // Step 2: get billing usage for function invocations (current billing period)
     let invocations = 0;
@@ -41,8 +55,7 @@ exports.handler = async (event) => {
         `https://api.netlify.com/api/v1/accounts/${accountSlug}/billing/usage`,
         { headers }
       );
-      usageData = await usageRes.json();
-      // Functions usage is typically under 'functions_invocations' or 'functions'
+      usageData = await safeJson(usageRes);
       invocations =
         usageData?.functions_invocations?.used ??
         usageData?.functions?.invocations?.used ??
