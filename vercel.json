@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd analytics-dashboard && npm run build -- --configuration production",
+  "buildCommand": "cd analytics-dashboard && npm install && npm run build -- --configuration production",
   "outputDirectory": "analytics-dashboard/dist/analytics-dashboard/browser",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
