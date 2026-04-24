@@ -47,7 +47,7 @@ export class AnalyticsService implements OnDestroy {
         new HttpParams().set('since', this.getLocalMidnightMs()).set('limit', '200'),
       ).pipe(catchError(() => of({ rows: [], summary: [], total: 0 })))
     ),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay({ bufferSize: 1, refCount: false }),
     takeUntil(this.destroy$),
   );
 
@@ -59,7 +59,7 @@ export class AnalyticsService implements OnDestroy {
         new HttpParams().set('since', this.getLocalMidnightMs()).set('limit', '200'),
       ).pipe(catchError(() => of({ rows: [], summary: [], total: 0 })))
     ),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay({ bufferSize: 1, refCount: false }),
     takeUntil(this.destroy$),
   );
 
@@ -71,7 +71,7 @@ export class AnalyticsService implements OnDestroy {
         new HttpParams().set('since', this.getLocalMidnightMs()).set('limit', '200'),
       ).pipe(catchError(() => of({ rows: [], summary: [], total: 0 })))
     ),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay({ bufferSize: 1, refCount: false }),
     takeUntil(this.destroy$),
   );
 
@@ -83,7 +83,7 @@ export class AnalyticsService implements OnDestroy {
         new HttpParams().set('since', this.getLocalMidnightMs()).set('limit', '200'),
       ).pipe(catchError(() => of({ rows: [], summary: [], total: 0 })))
     ),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay({ bufferSize: 1, refCount: false }),
     takeUntil(this.destroy$),
   );
 
@@ -98,7 +98,7 @@ export class AnalyticsService implements OnDestroy {
       summary: [...a.summary, ...b.summary, ...c.summary, ...d.summary],
       total: a.total + b.total + c.total + d.total,
     })),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay({ bufferSize: 1, refCount: false }),
     takeUntil(this.destroy$),
   );
 
@@ -110,7 +110,7 @@ export class AnalyticsService implements OnDestroy {
         new HttpParams().set('since', this.getLocalMidnightMs()).set('limit', '200'),
       ).pipe(catchError(() => of({ rows: [], summary: [], total: 0 })))
     ),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay({ bufferSize: 1, refCount: false }),
     takeUntil(this.destroy$),
   );
 
@@ -122,7 +122,7 @@ export class AnalyticsService implements OnDestroy {
         new HttpParams().set('since', this.getLocalMidnightMs()).set('limit', '200'),
       ).pipe(catchError(() => of({ rows: [], summary: [], total: 0 })))
     ),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay({ bufferSize: 1, refCount: false }),
     takeUntil(this.destroy$),
   );
 
@@ -134,7 +134,7 @@ export class AnalyticsService implements OnDestroy {
         new HttpParams().set('since', this.getLocalMidnightMs()).set('limit', '200'),
       ).pipe(catchError(() => of({ rows: [], summary: [], total: 0 })))
     ),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay({ bufferSize: 1, refCount: false }),
     takeUntil(this.destroy$),
   );
 
@@ -146,7 +146,7 @@ export class AnalyticsService implements OnDestroy {
         new HttpParams().set('since', this.getLocalMidnightMs()).set('limit', '200'),
       ).pipe(catchError(() => of({ rows: [], summary: [], total: 0 })))
     ),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay({ bufferSize: 1, refCount: false }),
     takeUntil(this.destroy$),
   );
 
@@ -161,7 +161,7 @@ export class AnalyticsService implements OnDestroy {
       summary: [...a.summary, ...b.summary, ...c.summary, ...d.summary],
       total: a.total + b.total + c.total + d.total,
     })),
-    shareReplay({ bufferSize: 1, refCount: true }),
+    shareReplay({ bufferSize: 1, refCount: false }),
     takeUntil(this.destroy$),
   );
 
