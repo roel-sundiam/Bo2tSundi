@@ -17,10 +17,7 @@ exports.handler = async (event) => {
     const requestedLimit = parseInt(params.limit || '5000', 10);
     const limit = Number.isFinite(requestedLimit) && requestedLimit > 0 ? requestedLimit : 5000;
 
-    const filter = { event: 'login', appId: { $ne: 'tennis-app' } };
-    if (params.appId) {
-      filter.appId = params.appId === 'tennis-app' ? '__removed_app__' : params.appId;
-    }
+    const filter = { event: 'page_view', appId: 'tennismarketplace' };
 
     if (params.since) {
       filter.timestamp = { $gte: new Date(parseInt(params.since, 10)) };
@@ -40,7 +37,7 @@ exports.handler = async (event) => {
           rows: [
             { $sort: { timestamp: -1 } },
             { $limit: limit },
-            { $project: { _id: 0, appId: 1, userId: 1, timestamp: 1 } },
+            { $project: { _id: 0, appId: 1, page: 1, timestamp: 1 } },
           ],
           summary: [
             { $group: { _id: '$appId', count: { $sum: 1 } } },
@@ -58,7 +55,7 @@ exports.handler = async (event) => {
       body: JSON.stringify({ rows, summary, total: rows.length }),
     };
   } catch (err) {
-    console.error('getLogins error:', err);
+    console.error('getVisitsMarketplace error:', err);
     return { statusCode: 500, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Internal error' }) };
   }
 };

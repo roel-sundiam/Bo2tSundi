@@ -3,21 +3,20 @@ import { DatePipe } from '@angular/common';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { AnalyticsService } from '../../core/services/analytics.service';
 
 @Component({
   selector: 'app-visits',
   standalone: true,
-  imports: [DatePipe, MatTableModule, MatSortModule, MatFormFieldModule, MatSelectModule, FormsModule],
+  imports: [DatePipe, MatTableModule, MatSortModule, FormsModule],
   templateUrl: './visits.html',
   styleUrl: './visits.scss',
 })
 export class VisitsComponent {
   private analytics = inject(AnalyticsService);
   private raw = toSignal(this.analytics.visits$);
+  readonly pvTennisClubName = 'Punta Verde Tennis Club';
 
   selectedApp = signal<string>('');
   displayedColumns = ['appId', 'page', 'timestamp'];
@@ -34,4 +33,36 @@ export class VisitsComponent {
   });
 
   total = computed(() => this.filteredRows().length);
+
+  activeApps = computed(() => this.appList().length);
+
+  latestVisitTimestamp = computed(() => {
+    const rows = this.filteredRows();
+    if (rows.length === 0) return null;
+
+    let latest: string | null = null;
+    for (const row of rows) {
+      const current = row.timestamp;
+      if (!latest || Date.parse(current) > Date.parse(latest)) {
+        latest = current;
+      }
+    }
+    return latest;
+  });
+
+  selectedAppLabel = computed(() => {
+    const selected = this.selectedApp();
+    return selected ? this.displayAppName(selected) : 'All Apps';
+  });
+
+  refresh(): void {
+    this.analytics.refresh();
+  }
+
+  displayAppName(appId: string): string {
+    if (appId.toLowerCase() === 'pvtennisclub') return this.pvTennisClubName;
+    if (appId.toLowerCase() === 'sheservestc') return 'SheServes Tennis Club';
+    if (appId.toLowerCase() === 'rctennisacademy') return 'RC Tennis Academy';
+    return appId;
+  }
 }

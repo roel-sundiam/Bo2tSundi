@@ -17,6 +17,11 @@ exports.handler = async (event) => {
     return { statusCode: 405, headers: CORS_HEADERS, body: 'Method Not Allowed' };
   }
 
+  // Tracking temporarily disabled
+  if (process.env.TRACKING_ENABLED !== 'true') {
+    return { statusCode: 202, headers: CORS_HEADERS, body: JSON.stringify({ ok: true, disabled: true }) };
+  }
+
   try {
     const payload = JSON.parse(event.body || '{}');
     const { event: eventType, appId, userId, page, timestamp } = payload;
@@ -39,7 +44,7 @@ exports.handler = async (event) => {
     };
 
     const client = await connectToDatabase();
-    await client.db('analytics').collection('events').insertOne(doc);
+    await client.db('Bo2tSundi').collection('events').insertOne(doc);
 
     return {
       statusCode: 202,

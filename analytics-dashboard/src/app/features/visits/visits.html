@@ -1,38 +1,86 @@
-<div class="toolbar-row">
-  <h2 class="page-title">Page Visits Today <span class="count-badge">{{ total() }}</span></h2>
-  <mat-form-field appearance="outline" class="app-filter">
-    <mat-label>Filter by App</mat-label>
-    <mat-select [(ngModel)]="selectedApp" [ngModelOptions]="{standalone: true}">
-      <mat-option value="">All Apps</mat-option>
-      @for (app of appList(); track app) {
-        <mat-option [value]="app">{{ app }}</mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
-</div>
+<section class="visits-shell">
+  <header class="visits-hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Traffic insights</p>
+      <h1>Track every page visit with clarity and context.</h1>
+      <p>
+        Filter by app, review latest activity instantly, and monitor traffic health in one streamlined view.
+      </p>
+    </div>
 
-@if (filteredRows().length === 0) {
-  <p class="empty-state">No page visits recorded today.</p>
-} @else {
-  <div class="table-container mat-elevation-z2">
-    <table mat-table [dataSource]="filteredRows()" matSort>
-      <ng-container matColumnDef="appId">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>App</th>
-        <td mat-cell *matCellDef="let row">{{ row.appId }}</td>
-      </ng-container>
+    <div class="hero-stats">
+      <div class="stat-chip">
+        <span class="label">Visits Today</span>
+        <strong>{{ total() }}</strong>
+      </div>
+      <div class="stat-chip">
+        <span class="label">Apps Reporting</span>
+        <strong>{{ activeApps() }}</strong>
+      </div>
+      <div class="stat-chip wide">
+        <span class="label">Latest Visit</span>
+        <strong>
+          @if (latestVisitTimestamp()) {
+            {{ latestVisitTimestamp() | date: 'medium' }}
+          } @else {
+            No visits yet
+          }
+        </strong>
+      </div>
+    </div>
+  </header>
 
-      <ng-container matColumnDef="page">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Page</th>
-        <td mat-cell *matCellDef="let row">{{ row.page }}</td>
-      </ng-container>
+  <section class="visits-panel">
+    <div class="panel-header">
+      <div>
+        <p class="eyebrow">Visit log</p>
+        <h2>{{ selectedAppLabel() }}</h2>
+      </div>
 
-      <ng-container matColumnDef="timestamp">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header>Time</th>
-        <td mat-cell *matCellDef="let row">{{ row.timestamp | date: 'short' }}</td>
-      </ng-container>
+      <button class="refresh-btn" type="button" (click)="refresh()" title="Refresh data">
+        ↻ Refresh
+      </button>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-    </table>
-  </div>
-}
+      <label class="app-filter" for="visits-app-filter">
+        <span>Filter by App</span>
+        <select
+          id="visits-app-filter"
+          class="app-select"
+          [(ngModel)]="selectedApp"
+          [ngModelOptions]="{ standalone: true }"
+        >
+          <option value="">All Apps</option>
+          @for (app of appList(); track app) {
+            <option [value]="app">{{ displayAppName(app) }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    @if (filteredRows().length === 0) {
+      <p class="empty-state">No page visits recorded today.</p>
+    } @else {
+      <div class="table-container">
+        <table mat-table [dataSource]="filteredRows()" matSort>
+          <ng-container matColumnDef="appId">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>App</th>
+            <td mat-cell *matCellDef="let row">{{ displayAppName(row.appId) }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="page">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Page</th>
+            <td mat-cell *matCellDef="let row">{{ row.page }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="timestamp">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Time</th>
+            <td mat-cell *matCellDef="let row">{{ row.timestamp | date: 'short' }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </table>
+      </div>
+    }
+  </section>
+</section>

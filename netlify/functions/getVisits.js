@@ -14,34 +14,43 @@ exports.handler = async (event) => {
 
   try {
     const params = event.queryStringParameters || {};
-    const limit = Math.min(parseInt(params.limit || '200', 10), 500);
+    const requestedLimit = parseInt(params.limit || '5000', 10);
+    const limit = Number.isFinite(requestedLimit) && requestedLimit > 0 ? requestedLimit : 5000;
 
-    const filter = { event: 'page_view' };
-    if (params.appId) filter.appId = params.appId;
+    const filter = { event: 'page_view', appId: { $nin: ['tennis-app', 'rt2tennisclub'] } };
+    if (params.appId) {
+      filter.appId = params.appId === 'tennis-app' ? '__removed_app__' : params.appId;
+    }
 
-    if (params.today === 'true') {
+    if (params.since) {
+      filter.timestamp = { $gte: new Date(parseInt(params.since, 10)) };
+    } else if (params.today === 'true') {
       const start = new Date();
       start.setHours(0, 0, 0, 0);
       filter.timestamp = { $gte: start };
     }
 
     const client = await connectToDatabase();
-    const db = client.db('analytics');
+    const db = client.db('Bo2tSundi');
 
-    const [rows, summary] = await Promise.all([
-      db.collection('events')
-        .find(filter)
-        .sort({ timestamp: -1 })
-        .limit(limit)
-        .project({ _id: 0, appId: 1, page: 1, timestamp: 1 })
-        .toArray(),
+    const facetResult = await db.collection('events').aggregate([
+      { $match: filter },
+      {
+        $facet: {
+          rows: [
+            { $sort: { timestamp: -1 } },
+            { $limit: limit },
+            { $project: { _id: 0, appId: 1, page: 1, timestamp: 1 } },
+          ],
+          summary: [
+            { $group: { _id: '$appId', count: { $sum: 1 } } },
+            { $sort: { count: -1 } },
+          ],
+        },
+      },
+    ]).toArray();
 
-      db.collection('events').aggregate([
-        { $match: filter },
-        { $group: { _id: '$appId', count: { $sum: 1 } } },
-        { $sort: { count: -1 } },
-      ]).toArray(),
-    ]);
+    const { rows, summary } = facetResult[0];
 
     return {
       statusCode: 200,

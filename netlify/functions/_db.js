@@ -13,7 +13,7 @@ async function connectToDatabase() {
   if (!MONGODB_URI) throw new Error('MONGODB_URI environment variable is not set. Add it to your .env file.');
 
   const client = new MongoClient(MONGODB_URI, {
-    maxPoolSize: 1,
+    maxPoolSize: 10,
     serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 10000,
     connectTimeoutMS: 10000,
