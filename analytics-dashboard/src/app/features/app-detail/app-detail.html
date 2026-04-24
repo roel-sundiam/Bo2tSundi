@@ -212,6 +212,43 @@
           </mat-card>
         }
 
+        @if (isSheServesTC && sheServesFinance()) {
+          @let finance = sheServesFinance()!;
+          <mat-card class="data-card finance-summary-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="tab-icon">account_balance_wallet</mat-icon>
+                Financial Summary
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="finance-cards-row">
+                <div class="finance-card collections">
+                  <mat-icon>arrow_circle_down</mat-icon>
+                  <span class="finance-amount">PHP {{ formatAmount(finance.collections) }}</span>
+                  <span class="finance-label">Collections</span>
+                </div>
+                <div class="finance-card disbursements">
+                  <mat-icon>arrow_circle_up</mat-icon>
+                  <span class="finance-amount">PHP {{ formatAmount(finance.disbursements) }}</span>
+                  <span class="finance-label">Disbursements</span>
+                </div>
+                <div class="finance-card service-fee">
+                  <mat-icon>receipt_long</mat-icon>
+                  <span class="finance-amount">PHP {{ formatAmount(finance.appServiceFee) }}</span>
+                  <span class="finance-label">App Service Fee (2%)</span>
+                  <div class="finance-sub">
+                    <span class="sub-paid">Paid: PHP {{ formatAmount(finance.totalServicePaid) }}</span>
+                    <span class="sub-outstanding" [class.has-outstanding]="finance.outstandingFee > 0">
+                      Outstanding: PHP {{ formatAmount(finance.outstandingFee) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        }
+
         @if (isSheServesTC) {
           <mat-card class="data-card">
             <mat-card-header>

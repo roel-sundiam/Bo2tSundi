@@ -72,3 +72,29 @@ export interface PaymentRT2Row {
 export interface PaymentsRT2Response {
   rows: PaymentRT2Row[];
 }
+
+export interface SheServesFinanceEntry {
+  _id: string;
+  entryType: 'cash-in' | 'cash-out';
+  amount: number;
+  description: string;
+  date: string;
+  createdBy: string;
+}
+
+export interface SheServesServicePayment {
+  _id: string;
+  amount: number;
+  date: string;
+  paidBy: string;
+  note: string;
+}
+
+export interface SheServesFinanceSummary {
+  collections: number;
+  disbursements: number;
+  netIncome: number;
+  appServiceFee: number;
+  totalServicePaid: number;
+  outstandingFee: number;
+}

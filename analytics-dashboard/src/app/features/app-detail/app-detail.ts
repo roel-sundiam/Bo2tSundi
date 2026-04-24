@@ -9,7 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTabsModule } from '@angular/material/tabs';
 import { AnalyticsService } from '../../core/services/analytics.service';
-import { RegistrationsResponse, ReservationRT2Row, PaymentRT2Row } from '../../shared/models/event.model';
+import { RegistrationsResponse, ReservationRT2Row, PaymentRT2Row, SheServesFinanceSummary } from '../../shared/models/event.model';
 
 @Component({
   selector: 'app-detail',
@@ -45,6 +45,7 @@ export class AppDetailComponent {
   ];
 
   registrations = signal<{ columns: string[]; rows: Record<string, string>[] }>({ columns: [], rows: [] });
+  sheServesFinance = signal<SheServesFinanceSummary | null>(null);
   reservationsRT2 = signal<ReservationRT2Row[]>([]);
   reservationColumns = ['bookedBy', 'date', 'time', 'players', 'status', 'totalFee'];
   paymentsRT2 = signal<PaymentRT2Row[]>([]);
@@ -68,6 +69,7 @@ export class AppDetailComponent {
         const latest = r.rows.slice(-10).reverse();
         this.registrations.set({ columns: visibleCols, rows: latest });
       });
+      this.analytics.getSheServesFinance().subscribe(f => this.sheServesFinance.set(f));
     }
     if (this.isRT2TennisClub) {
       this.analytics.getReservationsRT2().subscribe(r => this.reservationsRT2.set(r.rows));

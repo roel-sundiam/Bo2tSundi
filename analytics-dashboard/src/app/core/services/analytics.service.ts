@@ -5,7 +5,7 @@ import {
   shareReplay, takeUntil, catchError, of, combineLatest, map, tap,
 } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { VisitsResponse, LoginsResponse, RegistrationsResponse, ReservationsRT2Response, PaymentsRT2Response } from '../../shared/models/event.model';
+import { VisitsResponse, LoginsResponse, RegistrationsResponse, ReservationsRT2Response, PaymentsRT2Response, SheServesFinanceEntry, SheServesServicePayment, SheServesFinanceSummary } from '../../shared/models/event.model';
 
 const CACHE_TTL_MS = 5 * 60 * 1000;
 
@@ -224,6 +224,24 @@ export class AnalyticsService implements OnDestroy {
         summary: [...a.summary, ...b.summary, ...c.summary, ...d.summary],
         total: a.total + b.total + c.total + d.total,
       }))
+    );
+  }
+
+  getSheServesFinance(): Observable<SheServesFinanceSummary> {
+    const base = 'https://she-serves-tc.netlify.app/.netlify/functions/api/api';
+    return combineLatest([
+      this.http.get<SheServesFinanceEntry[]>(`${base}/finances`).pipe(catchError(() => of([]))),
+      this.http.get<SheServesServicePayment[]>(`${base}/service-payments`).pipe(catchError(() => of([]))),
+    ]).pipe(
+      map(([entries, payments]) => {
+        const collections = entries.filter(e => e.entryType === 'cash-in').reduce((sum, e) => sum + e.amount, 0);
+        const disbursements = entries.filter(e => e.entryType === 'cash-out').reduce((sum, e) => sum + e.amount, 0);
+        const netIncome = collections - disbursements;
+        const appServiceFee = netIncome > 0 ? netIncome * 0.02 : 0;
+        const totalServicePaid = payments.reduce((sum, p) => sum + p.amount, 0);
+        const outstandingFee = Math.max(0, appServiceFee - totalServicePaid);
+        return { collections, disbursements, netIncome, appServiceFee, totalServicePaid, outstandingFee };
+      })
     );
   }
 
