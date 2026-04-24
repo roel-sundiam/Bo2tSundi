@@ -252,7 +252,7 @@ export class AnalyticsService implements OnDestroy {
   }
 
   getRegistrations(): Observable<RegistrationsResponse> {
-    return this.http.get<RegistrationsResponse>('https://she-serves-tc.netlify.app/api/registrations').pipe(
+    return this.http.get<RegistrationsResponse>(`${this.base}/getRegistrations`).pipe(
       catchError(() => of({ columns: [], rows: [] }))
     );
   }
