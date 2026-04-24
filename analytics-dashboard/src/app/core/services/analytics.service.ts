@@ -2,7 +2,7 @@ import { Injectable, inject, OnDestroy } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import {
   Observable, Subject, BehaviorSubject, switchMap,
-  shareReplay, takeUntil, catchError, of, combineLatest, map, tap,
+  shareReplay, takeUntil, catchError, of, combineLatest, map, tap, interval,
 } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { VisitsResponse, LoginsResponse, RegistrationsResponse, ReservationsRT2Response, PaymentsRT2Response, SheServesFinanceEntry, SheServesServicePayment, SheServesFinanceSummary } from '../../shared/models/event.model';
@@ -37,6 +37,26 @@ export class AnalyticsService implements OnDestroy {
   refresh(): void {
     this.cache.clear();
     this.refreshTrigger$.next();
+  }
+
+  startActivityPolling(): void {
+    let lastTimestamp: string | null = null;
+
+    interval(30_000).pipe(
+      switchMap(() =>
+        this.http.get<{ timestamp: string | null }>(`${this.base}/getLastActivity`).pipe(
+          catchError(() => of({ timestamp: null as string | null }))
+        )
+      ),
+      takeUntil(this.destroy$)
+    ).subscribe(({ timestamp }) => {
+      if (lastTimestamp !== null && timestamp !== null && timestamp !== lastTimestamp) {
+        this.refresh();
+      }
+      if (timestamp !== null) {
+        lastTimestamp = timestamp;
+      }
+    });
   }
 
   private readonly visitsBoD$: Observable<VisitsResponse> = this.refreshTrigger$.pipe(

@@ -43,6 +43,7 @@ export class DashboardComponent implements OnDestroy {
 
   constructor() {
     this.analytics.getRegistrations().subscribe(r => this.registrationCount.set(r.rows.length));
+    this.analytics.startActivityPolling();
     document.addEventListener('click', this.unlockAudio, { once: true });
 
     effect(() => {
