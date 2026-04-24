@@ -44,7 +44,7 @@ export class AnalyticsService implements OnDestroy {
 
     interval(30_000).pipe(
       switchMap(() =>
-        this.http.get<{ timestamp: string | null }>(`${this.base}/getLastActivity`).pipe(
+        this.http.get<{ timestamp: string | null }>(`${this.base}/getActivityStatus`).pipe(
           catchError(() => of({ timestamp: null as string | null }))
         )
       ),
@@ -272,7 +272,8 @@ export class AnalyticsService implements OnDestroy {
   }
 
   getRegistrations(): Observable<RegistrationsResponse> {
-    return this.http.get<RegistrationsResponse>(`${this.base}/getRegistrations`).pipe(
+    return this.http.get<{ timestamp: string | null; registrations: RegistrationsResponse }>(`${this.base}/getActivityStatus`).pipe(
+      map(r => r.registrations),
       catchError(() => of({ columns: [], rows: [] }))
     );
   }
